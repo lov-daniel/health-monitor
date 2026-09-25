@@ -36,4 +36,15 @@ jobs:
 
       - name: "Test"
         run: go test ./...
+        
     build_frontend:
+      defaults:
+        run:
+          working-directory: "frontend"
+
+      runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: "placeholder"
+        runs: echo "Hello World"
