@@ -36,13 +36,13 @@ jobs:
 
       - name: "Test"
         run: go test ./...
-        
-    build_frontend:
-      defaults:
-        run:
-          working-directory: "frontend"
 
-      runs-on: ubuntu-latest
+  build_frontend:
+    defaults:
+      run:
+        working-directory: "frontend"
+
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
