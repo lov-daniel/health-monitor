@@ -1,34 +1,8 @@
 package ping
 
 import (
-	"fmt"
-	"sync"
 	"testing"
 )
-
-func runPings(endpoints []string) []string {
-	var wg sync.WaitGroup
-	results := make(chan Result, len(endpoints))
-
-	for _, url := range endpoints {
-		wg.Add(1)
-		go checkEndpoint(url, &wg, results)
-	}
-	wg.Wait()
-	close(results)
-
-	var ping_results []string
-
-	for r := range results {
-		if r.Err != nil {
-			ping_results = append(ping_results, fmt.Sprintf("[%s] %s - %dms - ERROR: %v\n", r.Status, r.Endpoint, r.LatencyMs, r.Err))
-		} else {
-			ping_results = append(ping_results, fmt.Sprintf("[%s] %s - %dms\n", r.Status, r.Endpoint, r.LatencyMs))
-		}
-	}
-
-	return ping_results
-}
 
 func TestPing(t *testing.T) {
 	endpoints := []string{
@@ -38,5 +12,27 @@ func TestPing(t *testing.T) {
 		"https://fakeurl.com",
 	}
 
-	fmt.Println(runPings(endpoints))
+	results, err := CheckAll(endpoints)
+
+	if err {
+		t.Errorf(`error when attempting to check all endpoints`)
+	}
+
+	if len(results) != 4 {
+		t.Errorf(`%d pings returned, %d expected`, len(results), len(endpoints))
+	}
+}
+
+func TestPingEmpty(t *testing.T) {
+	endpoints := []string{}
+
+	results, err := CheckAll(endpoints)
+
+	if err {
+		t.Errorf(`error when attempting to check all endpoints: `)
+	}
+
+	if len(results) > 0 {
+		t.Errorf(`%d pings returned, 0 expected`, len(results))
+	}
 }
